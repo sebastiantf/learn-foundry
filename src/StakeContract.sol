@@ -9,7 +9,7 @@ contract StakeContract {
     // user => token => amount
     mapping(address => mapping(address => uint256)) balances;
 
-    function stake(address token, uint256 amount) external {
+    function stake(address token, uint256 amount) external returns (bool) {
         balances[msg.sender][token] = amount;
         bool success = IERC20(token).transferFrom(
             msg.sender,
@@ -17,5 +17,6 @@ contract StakeContract {
             amount
         );
         if (!success) revert TransferFailed();
+        return success;
     }
 }
