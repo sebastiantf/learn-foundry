@@ -25,7 +25,8 @@ contract FlashloanerTest is Test {
         flashloaner = new Flashloaner(address(mockERC20));
     }
 
-    function testAssertTrue() public {
-        assertTrue(true);
+    function test_ConstructorRevertOnZeroAddress() public {
+        vm.expectRevert(Flashloaner.TokenAddressCannotBeZero.selector);
+        new Flashloaner(address(0));
     }
 }
