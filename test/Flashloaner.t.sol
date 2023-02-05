@@ -36,7 +36,7 @@ contract FlashloanerTest is Test {
     function test_depositTokensRevertOnZeroAmount() public {
         vm.expectRevert(Flashloaner.MustDepositOneTokenMinimum.selector);
         flashloaner.depositTokens(0);
-        
+
         vm.expectRevert(Flashloaner.MustDepositOneTokenMinimum.selector);
         flashloaner.depositTokens(0);
     }

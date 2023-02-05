@@ -24,4 +24,33 @@ contract Flashloaner is ReentrancyGuard {
         damnValuableToken.transferFrom(msg.sender, address(this), amount);
         poolBalance = poolBalance + amount;
     }
+
+    error MustBorrowOneTokenMinimum();
+    error NotEnoughTokensInPool();
+    error FlashLoanHasNotBeenPaidBack();
+
+    function flashLoan(uint256 borrowAmount) external nonReentrant {
+        if (borrowAmount == 0) revert MustBorrowOneTokenMinimum();
+
+        uint256 balanceBefore = damnValuableToken.balanceOf(address(this));
+        if (balanceBefore < borrowAmount) revert NotEnoughTokensInPool();
+
+        // Ensured by the protocol via the `depositTokens` function
+        assert(poolBalance == balanceBefore);
+
+        damnValuableToken.transfer(msg.sender, borrowAmount);
+
+        IReceiver(msg.sender).receiveTokens(
+            address(damnValuableToken),
+            borrowAmount
+        );
+
+        uint256 balanceAfter = damnValuableToken.balanceOf(address(this));
+        if (balanceAfter < balanceBefore) revert FlashLoanHasNotBeenPaidBack();
+        poolBalance = balanceAfter;
+    }
+}
+
+interface IReceiver {
+    function receiveTokens(address tokenAddress, uint256 amount) external;
 }
