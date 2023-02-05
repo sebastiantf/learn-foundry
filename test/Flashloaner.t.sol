@@ -37,4 +37,17 @@ contract FlashloanerTest is Test {
         vm.expectRevert(Flashloaner.MustDepositOneTokenMinimum.selector);
         flashloaner.depositTokens(0);
     }
+
+    function test_depositTokensIncreasePoolBalance() public {
+        assertEq(flashloaner.poolBalance(), 100);
+
+        mockERC20.approve(address(flashloaner), 1);
+        flashloaner.depositTokens(1);
+
+        assertEq(flashloaner.poolBalance(), 101);
+        assertEq(
+            mockERC20.balanceOf(address(flashloaner)),
+            flashloaner.poolBalance()
+        );
+    }
 }
