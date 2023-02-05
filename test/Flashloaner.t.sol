@@ -23,10 +23,18 @@ contract FlashloanerTest is Test {
         vm.label(address(mockERC20), "MockERC20");
 
         flashloaner = new Flashloaner(address(mockERC20));
+
+        mockERC20.approve(address(flashloaner), 100);
+        flashloaner.depositTokens(100);
     }
 
     function test_ConstructorRevertOnZeroAddress() public {
         vm.expectRevert(Flashloaner.TokenAddressCannotBeZero.selector);
         new Flashloaner(address(0));
+    }
+
+    function test_depositTokensRevertOnZeroAmount() public {
+        vm.expectRevert(Flashloaner.MustDepositOneTokenMinimum.selector);
+        flashloaner.depositTokens(0);
     }
 }
