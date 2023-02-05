@@ -5,7 +5,18 @@ import "forge-std/Test.sol";
 import {MockERC20} from "solmate/test/utils/mocks/MockERC20.sol";
 import "../src/Flashloaner.sol";
 
-contract FlashloanerTest is Test {
+contract TokenReceiver {
+    uint256 return_amount;
+
+    function receiveTokens(
+        address tokenAddress,
+        uint256 /* amount */
+    ) external {
+        ERC20(tokenAddress).transfer(msg.sender, return_amount);
+    }
+}
+
+contract FlashloanerTest is Test, TokenReceiver {
     Flashloaner public flashloaner;
     MockERC20 public mockERC20;
 
@@ -52,5 +63,33 @@ contract FlashloanerTest is Test {
             mockERC20.balanceOf(address(flashloaner)),
             flashloaner.poolBalance()
         );
+    }
+
+    function test_flashloanRevertMustBorrowOneTokenMinimum() public {
+        vm.expectRevert(Flashloaner.MustBorrowOneTokenMinimum.selector);
+        flashloaner.flashLoan(0);
+    }
+
+    function test_flashloanRevertNotEnoughTokensInPool() public {
+        vm.expectRevert(Flashloaner.NotEnoughTokensInPool.selector);
+        flashloaner.flashLoan(102);
+    }
+
+    function test_flashloanRevertFlashLoanHasNotBeenPaidBack() public {
+        return_amount = 0;
+        vm.expectRevert(Flashloaner.FlashLoanHasNotBeenPaidBack.selector);
+        flashloaner.flashLoan(1);
+    }
+
+    function test_flashloan() public {
+        return_amount = 10;
+        flashloaner.flashLoan(10);
+
+        assertEq(flashloaner.poolBalance(), 100);
+        assertEq(
+            mockERC20.balanceOf(address(flashloaner)),
+            flashloaner.poolBalance()
+        );
+        assertEq(mockERC20.balanceOf(address(this)), 1000e18 - 100);
     }
 }
