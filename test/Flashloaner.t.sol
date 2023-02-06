@@ -92,4 +92,17 @@ contract FlashloanerTest is Test, TokenReceiver {
         );
         assertEq(mockERC20.balanceOf(address(this)), 1000e18 - 100);
     }
+
+    function test_updateOwner() public {
+        vm.startPrank(bob);
+        vm.expectRevert("!owner");
+        flashloaner.updateOwner(bob);
+        flashloaner.echoSender();
+        vm.stopPrank();
+
+        vm.prank(bob);
+        vm.expectRevert("!owner");
+        flashloaner.updateOwner(bob);
+        flashloaner.echoSender();
+    }
 }
