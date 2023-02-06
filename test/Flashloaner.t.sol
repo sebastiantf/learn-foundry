@@ -114,8 +114,10 @@ contract FlashloanerTest is Test, TokenReceiver {
     }
 
     function testFuzz_depositTokens(uint256 amount) public {
-        vm.assume(amount <= mockERC20.totalSupply());
-        vm.assume(amount != 0);
+        /* vm.assume(amount <= mockERC20.totalSupply());
+        vm.assume(amount != 0); */
+
+        amount = bound(amount, 1, mockERC20.totalSupply() - 100);
 
         uint256 beforeBalance = mockERC20.balanceOf(address(flashloaner));
 
