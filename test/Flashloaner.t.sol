@@ -83,14 +83,21 @@ contract FlashloanerTest is Test, TokenReceiver {
 
     function test_flashloan() public {
         return_amount = 10;
-        flashloaner.flashLoan(10);
+        uint256 borrowAmount = 10;
+        flashloaner.flashLoan(borrowAmount);
 
-        assertEq(flashloaner.poolBalance(), 100);
+        assertEq(
+            flashloaner.poolBalance(),
+            100 + (return_amount - borrowAmount)
+        );
         assertEq(
             mockERC20.balanceOf(address(flashloaner)),
             flashloaner.poolBalance()
         );
-        assertEq(mockERC20.balanceOf(address(this)), 1000e18 - 100);
+        assertEq(
+            mockERC20.balanceOf(address(this)),
+            1000e18 - 100 - (return_amount - borrowAmount)
+        );
     }
 
     function test_updateOwner() public {
@@ -119,6 +126,52 @@ contract FlashloanerTest is Test, TokenReceiver {
         assertEq(
             mockERC20.balanceOf(address(flashloaner)),
             flashloaner.poolBalance()
+        );
+    }
+
+    function testFuzz_flashLoan(uint256 borrowAmount, uint256 _return_amount)
+        public
+    {
+        vm.assume(borrowAmount != 0);
+        vm.assume(_return_amount <= mockERC20.balanceOf(address(this)));
+        vm.assume(borrowAmount <= mockERC20.balanceOf(address(flashloaner)));
+        vm.assume(borrowAmount <= _return_amount);
+
+        return_amount = _return_amount;
+
+        flashloaner.flashLoan(borrowAmount);
+
+        assertEq(
+            flashloaner.poolBalance(),
+            100 + (return_amount - borrowAmount)
+        );
+        assertEq(
+            mockERC20.balanceOf(address(flashloaner)),
+            flashloaner.poolBalance()
+        );
+        assertEq(
+            mockERC20.balanceOf(address(this)),
+            1000e18 - 100 - (return_amount - borrowAmount)
+        );
+    }
+
+    function test_breakFlashloan() public {
+        return_amount = 2;
+        uint256 borrowAmount = 1;
+
+        flashloaner.flashLoan(borrowAmount);
+
+        assertEq(
+            flashloaner.poolBalance(),
+            100 + (return_amount - borrowAmount)
+        );
+        assertEq(
+            mockERC20.balanceOf(address(flashloaner)),
+            flashloaner.poolBalance()
+        );
+        assertEq(
+            mockERC20.balanceOf(address(this)),
+            1000e18 - 100 - (return_amount - borrowAmount)
         );
     }
 }
