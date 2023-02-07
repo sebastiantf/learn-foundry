@@ -5,10 +5,17 @@ import {ERC20} from "solmate/tokens/ERC20.sol";
 import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
 
 // adapted from https://github.com/nicolasgarcia214/damn-vulnerable-defi-foundry
+/// @title Flashloaner
+/// @notice A pool contract that lets anyone deposit tokens and flashloan available token
+/// @dev Sample contract for testing Foundry
 contract Flashloaner is ReentrancyGuard {
+    /// @notice Token being deposited on the contract
     ERC20 public immutable damnValuableToken;
+
+    /// @notice Balance of tokens deposited in the poole
     uint256 public poolBalance;
 
+    /// @notice Owner of contract
     address owner;
 
     modifier onlyOwner() {
@@ -25,6 +32,9 @@ contract Flashloaner is ReentrancyGuard {
 
     error MustDepositOneTokenMinimum();
 
+    /// @notice Deposit tokens to pool
+    /// @dev Reverts with `MustDepositOneTokenMinimum` if depositing zero amount
+    /// @param amount amount of tokens being deposited
     function depositTokens(uint256 amount) external nonReentrant {
         if (amount == 0) revert MustDepositOneTokenMinimum();
         // Transfer token from sender. Sender must have first approved them.
@@ -36,6 +46,9 @@ contract Flashloaner is ReentrancyGuard {
     error NotEnoughTokensInPool();
     error FlashLoanHasNotBeenPaidBack();
 
+    /// @notice Borrow tokens from pool via flashloan
+    /// @dev Reverts with `MustBorrowOneTokenMinimum` if `borrowAmount` is zero
+    /// @param borrowAmount amount of tokens being borrowed
     function flashLoan(uint256 borrowAmount) external nonReentrant {
         if (borrowAmount == 0) revert MustBorrowOneTokenMinimum();
 
