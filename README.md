@@ -15,3 +15,16 @@ forge snapshot --diff
 forge snapshot --check
 ```
 
+#### Include extra outputs from compiler
+
+Generates assembly and ir output files in the out folder
+
+```sh
+forge build --extra-output evm.assembly ir --extra-output-files evm.assembly ir
+```
+
+#### Inspect IR
+
+```sh
+forge inspect Counter ir > Counter.ir
+```
