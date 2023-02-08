@@ -28,3 +28,9 @@ forge build --extra-output evm.assembly ir --extra-output-files evm.assembly ir
 ```sh
 forge inspect Counter ir > Counter.ir
 ```
+
+#### Run test in debugger
+
+```sh
+forge debug ./test/Counter.t.sol -s "testIncrement()" --tc CounterTest
+```
