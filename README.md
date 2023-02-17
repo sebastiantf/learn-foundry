@@ -34,3 +34,9 @@ forge inspect Counter ir > Counter.ir
 ```sh
 forge debug ./test/Counter.t.sol -s "testIncrement()" --tc CounterTest
 ```
+
+#### Run live transaction in debugger
+
+```sh
+cast run <tx_hash> --debug --rpc-url <rpc_url>
+```
