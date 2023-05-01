@@ -14,7 +14,7 @@ contract WETH9Invariants is Test, InvariantTest {
         weth = new WETH9();
         handler = new Handler(weth);
 
-        // targetContract(address(handler));
+        targetContract(address(handler));
     }
 
     function invariant_totalSupplyStaysZero() public {
