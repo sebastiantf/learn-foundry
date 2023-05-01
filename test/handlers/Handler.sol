@@ -22,6 +22,11 @@ contract Handler is Test {
         // bound to available balance to avoid reverts
         _amount = bound(_amount, 0, address(this).balance);
 
+        // send required ETH to fuzzed callers
+        _pay(msg.sender, _amount);
+
+        // pass on fuzzed callers
+        vm.prank(msg.sender);
         weth.deposit{value: _amount}();
 
         ghost_depositSum += _amount;
@@ -29,9 +34,16 @@ contract Handler is Test {
 
     function withdraw(uint256 _amount) public {
         // bound to available WETH balance
-        _amount = bound(_amount, 0, weth.balanceOf(address(this)));
+        _amount = bound(_amount, 0, weth.balanceOf(msg.sender));
 
+        // pass on fuzzed callers
+        vm.startPrank(msg.sender); // startPrank because two actions to be pranked
         weth.withdraw(_amount);
+
+        // send withdrawn ETH back to Handler from fuzzed callers
+        _pay(address(this), _amount);
+
+        vm.stopPrank();
 
         ghost_withdrawSum += _amount;
     }
@@ -40,6 +52,11 @@ contract Handler is Test {
         // bound to available balance to avoid reverts
         _amount = bound(_amount, 0, address(this).balance);
 
+        // send required ETH to fuzzed callers
+        _pay(msg.sender, _amount);
+
+        // pass on fuzzed callers
+        vm.prank(msg.sender);
         (bool success, ) = address(weth).call{value: _amount}("");
         require(success);
 
@@ -48,4 +65,9 @@ contract Handler is Test {
 
     // required to receive ether after withdraw()
     receive() external payable {}
+
+    function _pay(address _to, uint256 _amount) internal {
+        (bool success, ) = _to.call{value: _amount}("");
+        require(success);
+    }
 }
