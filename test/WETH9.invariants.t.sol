@@ -51,12 +51,15 @@ contract WETH9Invariants is Test, InvariantTest {
         // WETH9 should have enough ETH balance to handle all withdrawals
 
         // find sum of all balances of all actors
-        uint256 balanceSum;
-        address[] memory actors = handler.actors();
-        for (uint256 i; i < actors.length; i++) {
-            balanceSum += weth.balanceOf(actors[i]);
-        }
+        uint256 balanceSum = handler.reduceActors(0, this.sumBalance);
 
         assertEq(address(weth).balance, balanceSum);
+    }
+
+    function sumBalance(
+        uint256 acc,
+        address addr
+    ) external view returns (uint256) {
+        return acc + weth.balanceOf(addr);
     }
 }

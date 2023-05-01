@@ -27,6 +27,17 @@ library LibAddressSet {
     function count(AddressSet storage s) internal view returns (uint256) {
         return s.addresses.length;
     }
+
+    function reduce(
+        AddressSet storage s,
+        uint256 acc,
+        function(uint256, address) external returns (uint256) func
+    ) internal returns (uint256) {
+        for (uint256 i; i < s.addresses.length; ++i) {
+            acc = func(acc, s.addresses[i]);
+        }
+        return acc;
+    }
 }
 
 contract Handler is Test {
@@ -98,6 +109,13 @@ contract Handler is Test {
         require(success);
 
         ghost_depositSum += _amount;
+    }
+
+    function reduceActors(
+        uint256 acc,
+        function(uint256, address) external returns (uint256) func
+    ) public returns (uint256) {
+        return _actors.reduce(acc, func);
     }
 
     function actors() public view returns (address[] memory) {
