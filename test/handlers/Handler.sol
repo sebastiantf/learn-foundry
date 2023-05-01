@@ -38,6 +38,15 @@ library LibAddressSet {
         }
         return acc;
     }
+
+    function forEach(
+        AddressSet storage s,
+        function(address) external func
+    ) internal {
+        for (uint256 i; i < s.addresses.length; ++i) {
+            func(s.addresses[i]);
+        }
+    }
 }
 
 contract Handler is Test {
@@ -116,6 +125,10 @@ contract Handler is Test {
         function(uint256, address) external returns (uint256) func
     ) public returns (uint256) {
         return _actors.reduce(acc, func);
+    }
+
+    function forEachActors(function(address) external func) public {
+        _actors.forEach(func);
     }
 
     function actors() public view returns (address[] memory) {

@@ -65,10 +65,19 @@ contract WETH9Invariants is Test, InvariantTest {
         assertEq(address(weth).balance, balanceSum);
     }
 
+    function invariant_individualBalancesLeTotalSupply() public {
+        // balances of individual actors should be less than or equal total supply
+        handler.forEachActors(this.assertIndividualBalance);
+    }
+
     function sumBalance(
         uint256 acc,
         address addr
     ) external view returns (uint256) {
         return acc + weth.balanceOf(addr);
+    }
+
+    function assertIndividualBalance(address addr) external {
+        assertLe(weth.balanceOf(addr), weth.totalSupply());
     }
 }
