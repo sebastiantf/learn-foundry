@@ -38,4 +38,12 @@ contract WETH9Invariants is Test, InvariantTest {
             handler.ETH_SUPPLY()
         );
     }
+
+    function invariant_solvency() public {
+        // WETH9 should have enough ETH balance to handle all withdrawals
+        assertEq(
+            address(weth).balance,
+            handler.ghost_depositSum() - handler.ghost_withdrawSum()
+        );
+    }
 }

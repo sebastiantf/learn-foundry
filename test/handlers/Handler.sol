@@ -9,6 +9,9 @@ contract Handler is Test {
 
     uint256 public constant ETH_SUPPLY = 21_000_000;
 
+    uint256 public ghost_depositSum;
+    uint256 public ghost_withdrawSum;
+
     constructor(WETH9 _weth) {
         weth = _weth;
         deal(address(this), ETH_SUPPLY);
@@ -20,6 +23,8 @@ contract Handler is Test {
         _amount = bound(_amount, 0, address(this).balance);
 
         weth.deposit{value: _amount}();
+
+        ghost_depositSum += _amount;
     }
 
     function withdraw(uint256 _amount) public {
@@ -27,6 +32,8 @@ contract Handler is Test {
         _amount = bound(_amount, 0, weth.balanceOf(address(this)));
 
         weth.withdraw(_amount);
+
+        ghost_withdrawSum += _amount;
     }
 
     function transferETHToDeposit(uint256 _amount) public {
@@ -35,6 +42,8 @@ contract Handler is Test {
 
         (bool success, ) = address(weth).call{value: _amount}("");
         require(success);
+
+        ghost_depositSum += _amount;
     }
 
     // required to receive ether after withdraw()
