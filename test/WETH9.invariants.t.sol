@@ -70,6 +70,19 @@ contract WETH9Invariants is Test, InvariantTest {
         handler.forEachActors(this.assertIndividualBalance);
     }
 
+    // Print call summary of last run
+    function invariant_callSummary() public view {
+        console.log("Call Summary");
+        console.log("---------------");
+        console.log("deposit: ", handler.calls("deposit"));
+        console.log("withdraw: ", handler.calls("withdraw"));
+        console.log(
+            "transferETHToDeposit: ",
+            handler.calls("transferETHToDeposit")
+        );
+        // Sum of all above should equal depth config
+    }
+
     function sumBalance(
         uint256 acc,
         address addr

@@ -63,9 +63,16 @@ contract Handler is Test {
 
     address internal currentActor;
 
+    mapping(bytes32 => uint256) public calls;
+
     modifier createActor() {
         _actors.add(msg.sender);
         currentActor = msg.sender;
+        _;
+    }
+
+    modifier countCall(bytes32 func) {
+        calls[func]++;
         _;
     }
 
@@ -75,7 +82,7 @@ contract Handler is Test {
         // now the totalSupply wont stay at zero, thus breaking invariant_totalSupplyStaysZero
     }
 
-    function deposit(uint256 _amount) public createActor {
+    function deposit(uint256 _amount) public createActor countCall("deposit") {
         // bound to available balance to avoid reverts
         _amount = bound(_amount, 0, address(this).balance);
 
@@ -89,7 +96,9 @@ contract Handler is Test {
         ghost_depositSum += _amount;
     }
 
-    function withdraw(uint256 _amount) public createActor {
+    function withdraw(
+        uint256 _amount
+    ) public createActor countCall("withdraw") {
         // bound to available WETH balance
         _amount = bound(_amount, 0, weth.balanceOf(currentActor));
 
@@ -105,7 +114,9 @@ contract Handler is Test {
         ghost_withdrawSum += _amount;
     }
 
-    function transferETHToDeposit(uint256 _amount) public createActor {
+    function transferETHToDeposit(
+        uint256 _amount
+    ) public createActor countCall("transferETHToDeposit") {
         // bound to available balance to avoid reverts
         _amount = bound(_amount, 0, address(this).balance);
 
