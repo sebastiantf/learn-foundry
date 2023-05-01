@@ -41,8 +41,11 @@ contract Handler is Test {
 
     AddressSet internal _actors;
 
+    address internal currentActor;
+
     modifier createActor() {
         _actors.add(msg.sender);
+        currentActor = msg.sender;
         _;
     }
 
@@ -57,10 +60,10 @@ contract Handler is Test {
         _amount = bound(_amount, 0, address(this).balance);
 
         // send required ETH to fuzzed callers
-        _pay(msg.sender, _amount);
+        _pay(currentActor, _amount);
 
         // pass on fuzzed callers
-        vm.prank(msg.sender);
+        vm.prank(currentActor);
         weth.deposit{value: _amount}();
 
         ghost_depositSum += _amount;
@@ -68,10 +71,10 @@ contract Handler is Test {
 
     function withdraw(uint256 _amount) public createActor {
         // bound to available WETH balance
-        _amount = bound(_amount, 0, weth.balanceOf(msg.sender));
+        _amount = bound(_amount, 0, weth.balanceOf(currentActor));
 
         // pass on fuzzed callers
-        vm.startPrank(msg.sender); // startPrank because two actions to be pranked
+        vm.startPrank(currentActor); // startPrank because two actions to be pranked
         weth.withdraw(_amount);
 
         // send withdrawn ETH back to Handler from fuzzed callers
@@ -87,10 +90,10 @@ contract Handler is Test {
         _amount = bound(_amount, 0, address(this).balance);
 
         // send required ETH to fuzzed callers
-        _pay(msg.sender, _amount);
+        _pay(currentActor, _amount);
 
         // pass on fuzzed callers
-        vm.prank(msg.sender);
+        vm.prank(currentActor);
         (bool success, ) = address(weth).call{value: _amount}("");
         require(success);
 
