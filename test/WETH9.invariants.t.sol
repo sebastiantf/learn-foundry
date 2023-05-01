@@ -2,13 +2,19 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
+import "forge-std/InvariantTest.sol";
 import "../src/WETH9.sol";
+import "./handlers/Handler.sol";
 
-contract WETH9Invariants is Test {
+contract WETH9Invariants is Test, InvariantTest {
     WETH9 public weth;
+    Handler public handler;
 
     function setUp() public {
         weth = new WETH9();
+        handler = new Handler(weth);
+
+        // targetContract(address(handler));
     }
 
     function invariant_totalSupplyStaysZero() public {
