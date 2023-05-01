@@ -46,4 +46,17 @@ contract WETH9Invariants is Test, InvariantTest {
             handler.ghost_depositSum() - handler.ghost_withdrawSum()
         );
     }
+
+    function invariant_solvencyBalanceSum() public {
+        // WETH9 should have enough ETH balance to handle all withdrawals
+
+        // find sum of all balances of all actors
+        uint256 balanceSum;
+        address[] memory actors = handler.actors();
+        for (uint256 i; i < actors.length; i++) {
+            balanceSum += weth.balanceOf(actors[i]);
+        }
+
+        assertEq(address(weth).balance, balanceSum);
+    }
 }
