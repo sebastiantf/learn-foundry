@@ -14,7 +14,16 @@ contract WETH9Invariants is Test, InvariantTest {
         weth = new WETH9();
         handler = new Handler(weth);
 
+        // Limit selectors to avoid unnecessary calls to irrelevant Handler methods, reducing reverts
+        bytes4[] memory selectors = new bytes4[](3);
+        selectors[0] = Handler.deposit.selector;
+        selectors[1] = Handler.withdraw.selector;
+        selectors[2] = Handler.transferETHToDeposit.selector;
+
         targetContract(address(handler));
+        targetSelector(
+            FuzzSelector({addr: address(handler), selectors: selectors})
+        );
     }
 
     /* function invariant_totalSupplyStaysZero() public {
