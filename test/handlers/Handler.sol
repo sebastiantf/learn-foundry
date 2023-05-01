@@ -65,6 +65,8 @@ contract Handler is Test {
 
     mapping(bytes32 => uint256) public calls;
 
+    uint256 public ghost_zeroAmountWithdraws;
+
     modifier createActor() {
         _actors.add(msg.sender);
         currentActor = msg.sender;
@@ -101,6 +103,11 @@ contract Handler is Test {
     ) public createActor countCall("withdraw") {
         // bound to available WETH balance
         _amount = bound(_amount, 0, weth.balanceOf(currentActor));
+
+        // Since during fuzzing msg.sender would almost always be new,
+        // they wont have a balance. Hence _amount would mostly be zero.
+        // Which is not a meaningful test. Tracking such calls here:
+        if (_amount == 0) ghost_zeroAmountWithdraws++;
 
         // pass on fuzzed callers
         vm.startPrank(currentActor); // startPrank because two actions to be pranked

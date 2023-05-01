@@ -80,6 +80,10 @@ contract WETH9Invariants is Test, InvariantTest {
             "transferETHToDeposit: ",
             handler.calls("transferETHToDeposit")
         );
+        console.log(
+            "zeroAmountWithdraws: ",
+            handler.ghost_zeroAmountWithdraws()
+        );
         // Sum of all above should equal depth config
     }
 
