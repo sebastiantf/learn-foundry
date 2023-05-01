@@ -17,4 +17,11 @@ contract WETH9Invariants is Test {
         // We need a handler method to set up those conditions
         assertEq(weth.totalSupply(), 0);
     }
+
+    // unit test that shows its possible to deposit and mint zero amount WETH
+    function test_zeroDeposit() public {
+        weth.deposit{value: 0}();
+        assertEq(0, weth.balanceOf(address(this)));
+        assertEq(0, weth.totalSupply());
+    }
 }
