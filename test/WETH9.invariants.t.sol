@@ -30,4 +30,12 @@ contract WETH9Invariants is Test, InvariantTest {
         assertEq(0, weth.balanceOf(address(this)));
         assertEq(0, weth.totalSupply());
     }
+
+    function invariant_conservationOfETH() public {
+        // totalSupply of WETH and Handler's ETH balance should equal total ETH_SUPPLY
+        assertEq(
+            weth.totalSupply() + address(handler).balance,
+            handler.ETH_SUPPLY()
+        );
+    }
 }
