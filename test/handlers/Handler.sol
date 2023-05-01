@@ -21,4 +21,14 @@ contract Handler is Test {
 
         weth.deposit{value: _amount}();
     }
+
+    function withdraw(uint256 _amount) public {
+        // bound to available WETH balance
+        _amount = bound(_amount, 0, weth.balanceOf(address(this)));
+
+        weth.withdraw(_amount);
+    }
+
+    // required to receive ether after withdraw()
+    receive() external payable {}
 }
