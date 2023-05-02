@@ -90,6 +90,10 @@ contract WETH9Invariants is Test, InvariantTest {
             "zeroAmountWithdraws: ",
             handler.ghost_zeroAmountWithdraws()
         );
+        console.log(
+            "zeroAllowanceTransferFroms: ",
+            handler.ghost_zeroAllowanceTransferFroms()
+        );
         // Sum of all above should equal depth config
     }
 

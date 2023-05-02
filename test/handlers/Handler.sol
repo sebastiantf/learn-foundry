@@ -78,6 +78,7 @@ contract Handler is Test {
     mapping(bytes32 => uint256) public calls;
 
     uint256 public ghost_zeroAmountWithdraws;
+    uint256 public ghost_zeroAllowanceTransferFroms;
 
     modifier createActor() {
         _actors.add(msg.sender);
@@ -199,6 +200,11 @@ contract Handler is Test {
         _amount = bound(_amount, 0, weth.balanceOf(from));
         // currentActor should have enough
         _amount = bound(_amount, 0, weth.allowance(currentActor, from));
+
+        // Since during fuzzing msg.sender would almost always be new,
+        // they wont have any allowance. Hence _amount would mostly be zero.
+        // Which is not a meaningful test. Tracking such calls here:
+        if (_amount == 0) ghost_zeroAllowanceTransferFroms++;
 
         vm.prank(currentActor);
         weth.transferFrom(from, to, _amount);
