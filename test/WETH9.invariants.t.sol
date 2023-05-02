@@ -46,6 +46,7 @@ contract WETH9Invariants is Test, InvariantTest {
 
     function invariant_conservationOfETH() public {
         // totalSupply of WETH and Handler's ETH balance should equal total ETH_SUPPLY
+        // WETH9 considers eth balances as totalSupply()
         assertEq(
             weth.totalSupply() + address(handler).balance,
             handler.ETH_SUPPLY()
@@ -54,9 +55,12 @@ contract WETH9Invariants is Test, InvariantTest {
 
     function invariant_solvency() public {
         // WETH9 should have enough ETH balance to handle all withdrawals
+        // it should also include all force pushed ETH
         assertEq(
             address(weth).balance,
-            handler.ghost_depositSum() - handler.ghost_withdrawSum()
+            handler.ghost_depositSum() +
+                handler.ghost_forcePushETHSum() -
+                handler.ghost_withdrawSum()
         );
     }
 
@@ -66,7 +70,11 @@ contract WETH9Invariants is Test, InvariantTest {
         // find sum of all balances of all actors
         uint256 balanceSum = handler.reduceActors(0, this.sumBalance);
 
-        assertEq(address(weth).balance, balanceSum);
+        // balance should be sum of all balances + any force pushed ether
+        assertEq(
+            address(weth).balance,
+            balanceSum + handler.ghost_forcePushETHSum()
+        );
     }
 
     function invariant_individualBalancesLeTotalSupply() public {
