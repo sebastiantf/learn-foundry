@@ -185,6 +185,25 @@ contract Handler is Test {
         weth.transfer(to, _amount);
     }
 
+    function transferFrom(
+        uint256 actorSeed,
+        uint256 fromSeed,
+        uint256 toSeed,
+        uint256 _amount
+    ) public useActor(actorSeed) countCall("transferFrom") {
+        // use existing actors that may already have approval
+        address from = _actors.rand(fromSeed);
+        address to = _actors.rand(toSeed);
+
+        // from should have enough balance
+        _amount = bound(_amount, 0, weth.balanceOf(from));
+        // currentActor should have enough
+        _amount = bound(_amount, 0, weth.allowance(currentActor, from));
+
+        vm.prank(currentActor);
+        weth.transferFrom(from, to, _amount);
+    }
+
     function reduceActors(
         uint256 acc,
         function(uint256, address) external returns (uint256) func
