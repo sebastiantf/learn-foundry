@@ -10,6 +10,18 @@ struct AddressSet {
 }
 
 library LibAddressSet {
+    function rand(
+        AddressSet storage s,
+        uint256 seed
+    ) internal view returns (address) {
+        if (s.addresses.length > 0) {
+            // get random address from previously used addresses
+            return s.addresses[seed % s.addresses.length];
+        } else {
+            return address(0x1337);
+        }
+    }
+
     function add(AddressSet storage s, address addr) internal {
         if (!s.saved[addr]) {
             s.addresses.push(addr);
@@ -73,6 +85,12 @@ contract Handler is Test {
         _;
     }
 
+    // can be used to reuse actors for withdraw() to avoid zeroAmountWithdraws
+    modifier useActor(uint256 actorIndexSeed) {
+        currentActor = _actors.rand(actorIndexSeed);
+        _;
+    }
+
     modifier countCall(bytes32 func) {
         calls[func]++;
         _;
@@ -99,8 +117,9 @@ contract Handler is Test {
     }
 
     function withdraw(
+        uint256 actorSeed,
         uint256 _amount
-    ) public createActor countCall("withdraw") {
+    ) public useActor(actorSeed) countCall("withdraw") {
         // bound to available WETH balance
         _amount = bound(_amount, 0, weth.balanceOf(currentActor));
 
