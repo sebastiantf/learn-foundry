@@ -4,6 +4,8 @@
 - [How to Foundry with Brock Elmore](https://www.youtube.com/watch?v=Rp_V7bYiTCM)
 - [How to Foundry 2.0: Brock Elmore](https://www.youtube.com/watch?v=EHrvD5c93JU)
 - [Foundry Book](https://book.getfoundry.sh)
+- [Invariant Testing - Foundry Book](https://book.getfoundry.sh/forge/invariant-testing)
+- [Invariant Testing WETH With Foundry](https://mirror.xyz/horsefacts.eth/Jex2YVaO65dda6zEyfM_-DXlXhOWCAoSpOx5PLocYgw)
 
 ## Useful commands
 
