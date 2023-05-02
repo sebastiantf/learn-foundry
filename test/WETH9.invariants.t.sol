@@ -15,13 +15,14 @@ contract WETH9Invariants is Test, InvariantTest {
         handler = new Handler(weth);
 
         // Limit selectors to avoid unnecessary calls to irrelevant Handler methods, reducing reverts
-        bytes4[] memory selectors = new bytes4[](6);
+        bytes4[] memory selectors = new bytes4[](7);
         selectors[0] = Handler.deposit.selector;
         selectors[1] = Handler.withdraw.selector;
         selectors[2] = Handler.transferETHToDeposit.selector;
         selectors[3] = Handler.approve.selector;
         selectors[4] = Handler.transfer.selector;
         selectors[5] = Handler.transferFrom.selector;
+        selectors[6] = Handler.forcePushETH.selector;
 
         targetContract(address(handler));
         targetSelector(

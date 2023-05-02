@@ -61,6 +61,12 @@ library LibAddressSet {
     }
 }
 
+contract ForcePush {
+    constructor(address weth) payable {
+        selfdestruct(payable(weth));
+    }
+}
+
 contract Handler is Test {
     using LibAddressSet for AddressSet;
 
@@ -216,6 +222,12 @@ contract Handler is Test {
 
         vm.prank(currentActor);
         weth.transferFrom(from, to, _amount);
+    }
+
+    function forcePushETH(uint256 _amount) public countCall("transferFrom") {
+        _amount = bound(_amount, 0, address(this).balance);
+
+        new ForcePush{value: _amount}(address(weth));
     }
 
     function reduceActors(
