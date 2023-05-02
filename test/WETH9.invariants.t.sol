@@ -15,11 +15,12 @@ contract WETH9Invariants is Test, InvariantTest {
         handler = new Handler(weth);
 
         // Limit selectors to avoid unnecessary calls to irrelevant Handler methods, reducing reverts
-        bytes4[] memory selectors = new bytes4[](4);
+        bytes4[] memory selectors = new bytes4[](5);
         selectors[0] = Handler.deposit.selector;
         selectors[1] = Handler.withdraw.selector;
         selectors[2] = Handler.transferETHToDeposit.selector;
         selectors[3] = Handler.approve.selector;
+        selectors[4] = Handler.transfer.selector;
 
         targetContract(address(handler));
         targetSelector(
@@ -77,6 +78,7 @@ contract WETH9Invariants is Test, InvariantTest {
         console.log("---------------");
         console.log("deposit: ", handler.calls("deposit"));
         console.log("approve: ", handler.calls("approve"));
+        console.log("transfer: ", handler.calls("transfer"));
         console.log("withdraw: ", handler.calls("withdraw"));
         console.log(
             "transferETHToDeposit: ",
