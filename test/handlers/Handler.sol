@@ -213,7 +213,7 @@ contract Handler is Test {
             weth.approve(currentActor, _amount);
         } else {
             // if not, currentActor should have enough allowance
-            _amount = bound(_amount, 0, weth.allowance(currentActor, from));
+            _amount = bound(_amount, 0, weth.allowance(from, currentActor));
         }
 
         // Since during fuzzing msg.sender would almost always be new,
