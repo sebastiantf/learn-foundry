@@ -85,6 +85,7 @@ contract Handler is Test {
 
     uint256 public ghost_zeroAmountWithdraws;
     uint256 public ghost_zeroAllowanceTransferFroms;
+    uint256 public ghost_forcePushETHSum;
 
     modifier createActor() {
         _actors.add(msg.sender);
@@ -228,6 +229,8 @@ contract Handler is Test {
         _amount = bound(_amount, 0, address(this).balance);
 
         new ForcePush{value: _amount}(address(weth));
+
+        ghost_forcePushETHSum += _amount;
     }
 
     function reduceActors(
