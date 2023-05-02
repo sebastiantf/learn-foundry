@@ -1,0 +1,15 @@
+diff --git a/src/WETH9.sol b/src/WETH9.sol
+index c0425c8..eead14c 100644
+--- a/src/WETH9.sol
++++ b/src/WETH9.sol
+@@ -26,9 +26,7 @@ contract WETH9 {
+     }
+ 
+     function withdraw(uint256 wad) public {
+-        require(balanceOf[msg.sender] >= wad);
+-        balanceOf[msg.sender] -= wad;
+-        payable(msg.sender).transfer(wad);
++        payable(msg.sender).transfer(1);
+         emit Withdrawal(msg.sender, wad);
+     }
+ 

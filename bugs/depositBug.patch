@@ -1,0 +1,13 @@
+diff --git a/src/WETH9.sol b/src/WETH9.sol
+index c0425c8..38a0ae4 100644
+--- a/src/WETH9.sol
++++ b/src/WETH9.sol
+@@ -21,7 +21,7 @@ contract WETH9 {
+     }
+ 
+     function deposit() public payable {
+-        balanceOf[msg.sender] += msg.value;
++        balanceOf[msg.sender] += 1;
+         emit Deposit(msg.sender, msg.value);
+     }
+ 
