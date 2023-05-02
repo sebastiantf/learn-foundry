@@ -157,6 +157,20 @@ contract Handler is Test {
         ghost_depositSum += _amount;
     }
 
+    function approve(
+        uint256 actorSeed,
+        uint256 spenderSeed,
+        uint256 _amount
+    ) public useActor(actorSeed) countCall("approve") {
+        // use existing actors to be reused in transferFrom
+        address spender = _actors.rand(spenderSeed);
+
+        // no need to bound _amount since its only allowance
+
+        vm.prank(currentActor);
+        weth.approve(spender, _amount);
+    }
+
     function reduceActors(
         uint256 acc,
         function(uint256, address) external returns (uint256) func
