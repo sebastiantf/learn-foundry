@@ -190,6 +190,7 @@ contract Handler is Test {
         uint256 actorSeed,
         uint256 fromSeed,
         uint256 toSeed,
+        bool _approve, // fuzz prior approvals
         uint256 _amount
     ) public useActor(actorSeed) countCall("transferFrom") {
         // use existing actors that may already have approval
@@ -198,8 +199,15 @@ contract Handler is Test {
 
         // from should have enough balance
         _amount = bound(_amount, 0, weth.balanceOf(from));
-        // currentActor should have enough
-        _amount = bound(_amount, 0, weth.allowance(currentActor, from));
+
+        if (_approve) {
+            // if fuzzer sets approve, approve the currentActor
+            vm.prank(from);
+            weth.approve(currentActor, _amount);
+        } else {
+            // if not, currentActor should have enough allowance
+            _amount = bound(_amount, 0, weth.allowance(currentActor, from));
+        }
 
         // Since during fuzzing msg.sender would almost always be new,
         // they wont have any allowance. Hence _amount would mostly be zero.
